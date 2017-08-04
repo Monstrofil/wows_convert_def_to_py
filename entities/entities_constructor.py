@@ -15,7 +15,7 @@ class EntitiesConstructor(object):
     def __init__(self, base_path):
         self._base_path = base_path
         self._xml = etree.parse(
-            os.path.join(self.SCRIPTS_FOLDER, 'entities.xml'))
+            os.path.join(base_path, self.SCRIPTS_FOLDER, 'entities.xml'))
         self._entity_constructor = EntityConstructor(base_path)
 
     def build_entities(self):
