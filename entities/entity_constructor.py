@@ -36,17 +36,14 @@ class EntityConstructor(object):
 
         for item in root:
             if item.tag in ('ClientMethods', 'CellMethods', 'BaseMethods'):
-                entity.methods = self._parse_methods(item)
+                entity.methods += list(self._parse_methods(item))
 
                 # TODO: parse properties
 
         self._construct_py(entity)
 
     def _parse_methods(self, p_section):
-        for p_method in p_section:
-            method = EntityMethod.from_section(p_method)
-
-            yield method
+        return [EntityMethod.from_section(p_method) for p_method in p_section]
 
     def _construct_py(self, entity):
         path, filename = os.path.split(self.ENTITY_TEMPLATE)
