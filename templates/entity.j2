@@ -1,0 +1,8 @@
+from base import unpack
+
+class {{entity.name}}(object):
+{% for method in entity.methods %}
+    @unpack({{method.arguments}})
+    def {{method.name}}(self{% if method.arguments %}, {% endif %}{% for arg in method.arguments %}arg{{loop.index}}{% if not loop.last %}, {% endif %}{% endfor %}):
+        pass
+{% endfor %}
