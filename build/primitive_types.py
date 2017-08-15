@@ -28,6 +28,17 @@ def BLOB(stream):
     return stream.read(size),
 
 
+def STRING(stream):
+    """
+    STRING — Size (bytes): N+k
+    Binary string data. 
+    :type stream: StringIO
+    :rtype: object 
+    """
+    size, = unpack('B', stream.read(1))
+    return stream.read(size)
+
+
 def PYTHON(stream):
     """
     BLOB — Size (bytes): N+k
@@ -172,6 +183,7 @@ def VECTOR4(stream):
 
 TYPES = {
     'BLOB': BLOB,
+    'STRING': STRING,
     'FLOAT': FLOAT32,
     'FLOAT32': FLOAT32,
     'FLOAT64': FLOAT64,
