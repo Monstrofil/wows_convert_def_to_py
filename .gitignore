@@ -6,6 +6,7 @@
 .idea
 build/entities/
 build/_alias.py
+build/_entities_list.py
 *.iml
 out
 gen### Python template
