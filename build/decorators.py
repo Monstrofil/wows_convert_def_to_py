@@ -1,16 +1,18 @@
 #!/usr/bin/python
 # coding=utf-8
+from StringIO import StringIO
+
+from ._alias import g_aliasMap
 from .primitive_types import TYPES
-from .alias import g_aliasMap
 
 __author__ = "Aleksandr Shyshatsky"
-__all__ = ['unpack']
+__all__ = ['unpack_func_args']
 
 
 def _unpack_list(stream, type_):
     size, = TYPES['UINT8'](stream)
     for _ in xrange(size):
-        yield _unpack(stream, [type_])[0]
+        yield unpack_variables(stream, [type_])[0]
 
 
 def _unpack_dict(stream, types):
@@ -25,21 +27,24 @@ def _unpack_dict(stream, types):
 
     kw = {}
     for key, value in types:
-        kw[key] = _unpack(stream, [value])[0]
+        kw[key] = unpack_variables(stream, [value])[0]
     return kw
 
 
-def _unpack(stream, arguments_list):
+def unpack_variables(stream, arguments_list):
     """
     Unpack given stream into packed_arguments;
     :param stream: 
     :return: 
     """
+    if isinstance(stream, (str, unicode)):
+        stream = StringIO(stream)
+
     unpacked = []
     for arg in arguments_list:
         if isinstance(arg, str):
             if arg in g_aliasMap:
-                unpacked.extend(_unpack(stream, [g_aliasMap[arg]]))
+                unpacked.extend(unpack_variables(stream, [g_aliasMap[arg]]))
             else:
                 unpacked.append(TYPES[arg](stream)[0])
         elif isinstance(arg, (list, tuple)):
@@ -51,15 +56,14 @@ def _unpack(stream, arguments_list):
     return unpacked
 
 
-def unpack(arguments_list):
+def unpack_func_args(arguments_list):
     """
     Get's stringIO object and unpacks it into given form;
     :param list[str] arguments_list: list of arguments  
     """
     def _func_wrap(func):
         def _wrapper(self, stream):
-            args = _unpack(stream, arguments_list)
-            assert stream.pos == stream.len
+            args = unpack_variables(stream, arguments_list)
             return func(self, *args)
         return _wrapper
     return _func_wrap

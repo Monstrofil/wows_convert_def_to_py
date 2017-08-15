@@ -7,6 +7,7 @@ from lxml import etree
 
 from entities.entity import Entity
 from entities.entity_method import EntityMethod
+from entities.entity_property import EntityProperty
 
 __author__ = "Aleksandr Shyshatsky"
 
@@ -17,7 +18,7 @@ class EntityConstructor(object):
     """
     ENTITY_TEMPLATE = 'templates/entity.j2'
     DEF_PATH = 'scripts/entity_defs'
-    BUILD_DIR = 'build'
+    BUILD_DIR = 'build/entities'
 
     def __init__(self, base_path):
         self._base_path = base_path
@@ -38,18 +39,22 @@ class EntityConstructor(object):
             if item.tag in ('ClientMethods', 'CellMethods', 'BaseMethods'):
                 entity.methods += list(self._parse_methods(item))
 
-                # TODO: parse properties
+            if item.tag in ('Properties',):
+                entity.properties += list(self._parse_properties(item))
 
-        self._construct_py(entity)
+        if not os.path.exists(self.BUILD_DIR):
+            os.mkdir(self.BUILD_DIR)
+        self._build_py(entity)
 
     def _parse_methods(self, p_section):
         return [EntityMethod.from_section(p_method) for p_method in p_section]
 
-    def _construct_py(self, entity):
+    def _parse_properties(self, p_section):
+        return [EntityProperty.from_section(p_method) for p_method in p_section]
+
+    def _build_py(self, entity):
         path, filename = os.path.split(self.ENTITY_TEMPLATE)
         template = Environment(loader=FileSystemLoader(path)).get_template(filename)
 
-        if not os.path.exists(self.BUILD_DIR):
-            os.mkdir('build')
-        with open(os.path.join('build', entity.name + '.py'), 'wb') as f:
+        with open(os.path.join(self.BUILD_DIR, entity.name + '.py'), 'wb') as f:
             f.write(template.render(dict(entity=entity)))

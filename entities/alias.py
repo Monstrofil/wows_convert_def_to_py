@@ -1,15 +1,18 @@
 #!/usr/bin/python
 # coding=utf-8
-from lxml import etree, objectify
+import os
+
+from lxml import etree
 
 __author__ = "Aleksandr Shyshatsky"
 
 
 class Alias(object):
-    ALIAS_PATH = '../scripts/entity_defs/alias.xml'
+    ALIAS_PATH = 'scripts/entity_defs/alias.xml'
 
-    def __init__(self):
-        self._xml = etree.parse(self.ALIAS_PATH, parser=etree.XMLParser(remove_comments=True))
+    def __init__(self, base_path):
+        scripts_path = os.path.join(base_path, self.ALIAS_PATH)
+        self._xml = etree.parse(scripts_path, parser=etree.XMLParser(remove_comments=True))
         self._aliases = {}
 
     def get_map(self):
@@ -36,5 +39,3 @@ class Alias(object):
                 self._aliases[item.tag.strip()] = [type_, props]
 
         return self._aliases
-
-g_aliasMap = Alias().get_map()

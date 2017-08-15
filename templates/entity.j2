@@ -1,8 +1,32 @@
-from base import unpack
+from build.decorators import unpack_func_args, unpack_variables
 
 class {{entity.name}}(object):
+    def __init__(self):
+{% for property in entity.properties %}
+        self._{{property.name}} = {{property.default_value}}
+{% endfor %}
+        return
+
+    ####################################
+    #      METHODS
+    ####################################
+
 {% for method in entity.methods %}
-    @unpack({{method.arguments}})
+    @unpack_func_args({{method.arguments}})
     def {{method.name}}(self{% if method.arguments %}, {% endif %}{% for arg in method.arguments %}arg{{loop.index}}{% if not loop.last %}, {% endif %}{% endfor %}):
         pass
+{% endfor %}
+
+    ####################################
+    #       PROPERTIES
+    ####################################
+
+{% for property in entity.properties %}
+    @property
+    def {{property.name}}(self):
+        return self._{{property.name}}
+
+    @{{property.name}}.setter
+    def {{property.name}}(self, value):
+        self._{{property.name}}, = unpack_variables(value, {{property.argument}})
 {% endfor %}
