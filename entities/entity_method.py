@@ -30,7 +30,9 @@ class EntityMethod(object):
                         tag = property.tag
                         props.append((tag, type))
 
-                    method.arguments.append([type_, props])
+                    allow_none = bool(item.xpath('allowNone'))
+
+                    method.arguments.append([type_, props, allow_none])
                 else:
                     method.arguments.append(item.text.strip())
         return method

@@ -36,6 +36,8 @@ class Alias(object):
                     tag = property.tag
                     props.append((tag, type))
 
-                self._aliases[item.tag.strip()] = [type_, props]
+                allow_none = bool(item.xpath('AllowNone'))
+
+                self._aliases[item.tag.strip()] = [type_, props, allow_none]
 
         return self._aliases

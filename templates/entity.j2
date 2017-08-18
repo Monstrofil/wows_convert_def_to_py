@@ -1,6 +1,16 @@
-from build.decorators import unpack_func_args, unpack_variables
+#      DO NOT CHANGE THIS FILE     #
+# FILE WAS GENERATED AUTOMATICALLY #
 
-class {{entity.name}}(object):
+from def_generator.Entity import Entity
+from def_generator.events import EventHook
+
+from def_generator.decorators import unpack_func_args, unpack_variables
+
+
+class {{entity.name}}(Entity):
+    {% for method in entity.methods %}
+    g_{{method.name}} = EventHook()
+    {% endfor %}
     def __init__(self):
 {% for property in entity.properties %}
         self._{{property.name}} = {{property.default_value}}
@@ -14,7 +24,7 @@ class {{entity.name}}(object):
 {% for method in entity.methods %}
     @unpack_func_args({{method.arguments}})
     def {{method.name}}(self{% if method.arguments %}, {% endif %}{% for arg in method.arguments %}arg{{loop.index}}{% if not loop.last %}, {% endif %}{% endfor %}):
-        pass
+        self.g_{{method.name}}.fire(self{% if method.arguments %}, {% endif %}{% for arg in method.arguments %}arg{{loop.index}}{% if not loop.last %}, {% endif %}{% endfor %})
 {% endfor %}
 
     ####################################

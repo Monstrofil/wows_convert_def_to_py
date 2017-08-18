@@ -19,7 +19,6 @@ def BLOB(stream):
     # hack for arenaStateReceived
     if size == 0xff:
         size, = unpack('H', stream.read(2))
-        print size
         # some dummy shit
         unpack('B', stream.read(1))
 
@@ -36,7 +35,7 @@ def STRING(stream):
     :rtype: object 
     """
     size, = unpack('B', stream.read(1))
-    return stream.read(size)
+    return stream.read(size),
 
 
 def PYTHON(stream):

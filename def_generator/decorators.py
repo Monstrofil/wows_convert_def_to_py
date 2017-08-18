@@ -2,7 +2,7 @@
 # coding=utf-8
 from StringIO import StringIO
 
-from ._alias import g_aliasMap
+from build._alias import g_aliasMap
 from .primitive_types import TYPES
 
 __author__ = "Aleksandr Shyshatsky"
@@ -15,12 +15,12 @@ def _unpack_list(stream, type_):
         yield unpack_variables(stream, [type_])[0]
 
 
-def _unpack_dict(stream, types):
+def _unpack_dict(stream, types, allow_none):
     stream_pos = stream.pos
 
     # bada-boom, empty dict :)
     # check if this works with non-null dict
-    if stream.read(1) == chr(0x00):
+    if allow_none and stream.read(1) == chr(0x00):
         return None
     else:
         stream.seek(stream_pos)
@@ -52,7 +52,7 @@ def unpack_variables(stream, arguments_list):
                 array = list(_unpack_list(stream, arg[1]))
                 unpacked.append(array)
             if arg[0] == 'FIXED_DICT':
-                unpacked.append(_unpack_dict(stream, arg[1]))
+                unpacked.append(_unpack_dict(stream, arg[1], arg[2]))
     return unpacked
 
 

@@ -5,6 +5,7 @@
 # IntelliJ project files
 .idea
 build/entities/
+!build/entities/plugins
 build/_alias.py
 build/_entities_list.py
 *.iml

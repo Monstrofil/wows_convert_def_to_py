@@ -31,7 +31,9 @@ class EntityProperty(object):
                     tag = property.tag
                     props.append((tag, type))
 
-                method.argument = [[type_, props]]
+                allow_none = bool(item.xpath('allowNone'))
+
+                method.argument = [[type_, props, allow_none]]
             else:
                 method.argument = [item.text.strip()]
 

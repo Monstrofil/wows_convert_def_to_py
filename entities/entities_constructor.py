@@ -14,6 +14,7 @@ __author__ = "Aleksandr Shyshatsky"
 class EntitiesConstructor(object):
     SCRIPTS_FOLDER = 'scripts/'
     VARIABLE_TEMPLATE = 'templates/global_variable.j2'
+    VARIABLE_INIT = 'templates/__init__.j2'
 
     def __init__(self, base_path):
         self._base_path = base_path
@@ -32,6 +33,7 @@ class EntitiesConstructor(object):
 
         self._build_alias()
         self._build_entities_list()
+        self._build_entities_imports()
 
     def _build_entities(self, p_section):
         for entity in p_section:
@@ -54,6 +56,12 @@ class EntitiesConstructor(object):
         template = Environment(loader=FileSystemLoader(path)).get_template(filename)
         with open(os.path.join('build', '_entities_list.py'), 'wb') as f:
             f.write(template.render(dict(varName='g_entitiesList', value=self._entities)))
+
+    def _build_entities_imports(self):
+        path, filename = os.path.split(self.VARIABLE_INIT)
+        template = Environment(loader=FileSystemLoader(path)).get_template(filename)
+        with open(os.path.join('build', 'entities', '__init__.py'), 'wb') as f:
+            f.write(template.render(dict(entities=self._entities)))
 
     def _get_entity_description(self, entity_name):
         self._entity_constructor.build(entity_name)
