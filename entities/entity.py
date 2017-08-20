@@ -12,3 +12,4 @@ class Entity(object):
         self.name = name
         self.methods = []
         self.properties = []
+        self.implements = []

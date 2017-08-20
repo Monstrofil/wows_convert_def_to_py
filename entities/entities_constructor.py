@@ -44,6 +44,9 @@ class EntitiesConstructor(object):
         with open('build/entities/__init__.py', 'w') as f:
             pass
 
+        with open('build/entities/interfaces/__init__.py', 'w') as f:
+            pass
+
     def _build_alias(self):
         path, filename = os.path.split(self.VARIABLE_TEMPLATE)
         template = Environment(loader=FileSystemLoader(path)).get_template(filename)
