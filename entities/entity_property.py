@@ -39,6 +39,18 @@ class EntityProperty(object):
 
         try:
             default, = p_section.xpath('Default/text()')
+            default = default.strip()
+
+            try:
+                default = int(default)
+            except ValueError:
+                pass
+            else:
+                try:
+                    default = float(default)
+                except ValueError:
+                    pass
+
             method.default_value = default
         except ValueError:
             pass

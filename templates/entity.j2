@@ -7,16 +7,28 @@ from def_generator.events import EventHook
 from def_generator.decorators import unpack_func_args, unpack_variables
 
 {% for arg in entity.implements %}
-from interfaces.{{arg}} import {{arg}}
+try:
+    from interfaces.{{arg}} import {{arg}}
+except:
+    from {{arg}} import {{arg}}
 {% endfor %}
 
-class {{entity.name}}(Entity{% if entity.implements %}, {% endif %}{% for arg in entity.implements %}{{arg}}{% if not loop.last %}, {% endif %}{% endfor %}):
+
+class {{entity.name}}({% if not entity.implements %}object{% endif %}{% for arg in entity.implements %}{{arg}}{% if not loop.last %}, {% endif %}{% endfor %}):
     {% for method in entity.methods %}
     g_{{method.name}} = EventHook()
     {% endfor %}
     def __init__(self):
+        self.id = None
+        self.position = None
+
 {% for property in entity.properties %}
-        self._{{property.name}} = {{property.default_value}}
+        self._{{property.name}} = {{property.default_value.__repr__()}}
+{% endfor %}
+
+        # MRO fix
+{% for arg in entity.implements %}
+        {{arg}}.__init__(self)
 {% endfor %}
         return
 
@@ -43,3 +55,6 @@ class {{entity.name}}(Entity{% if entity.implements %}, {% endif %}{% for arg in
     def {{property.name}}(self, value):
         self._{{property.name}}, = unpack_variables(value, {{property.argument}})
 {% endfor %}
+
+    def __repr__(self):
+        return "<{}> {}".format(self.__class__.__name__, self.__dict__)
