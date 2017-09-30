@@ -41,18 +41,22 @@ def unpack_variables(stream, arguments_list):
         stream = StringIO(stream)
 
     unpacked = []
-    for arg in arguments_list:
-        if isinstance(arg, str):
-            if arg in g_aliasMap:
-                unpacked.extend(unpack_variables(stream, [g_aliasMap[arg]]))
-            else:
-                unpacked.append(TYPES[arg](stream)[0])
-        elif isinstance(arg, (list, tuple)):
-            if arg[0] == 'ARRAY':
-                array = list(_unpack_list(stream, arg[1]))
-                unpacked.append(array)
-            if arg[0] == 'FIXED_DICT':
-                unpacked.append(_unpack_dict(stream, arg[1], arg[2]))
+    try:
+        for arg in arguments_list:
+            if isinstance(arg, str):
+                if arg in g_aliasMap:
+                    unpacked.extend(unpack_variables(stream, [g_aliasMap[arg]]))
+                else:
+                    unpacked.append(TYPES[arg](stream)[0])
+            elif isinstance(arg, (list, tuple)):
+                if arg[0] == 'ARRAY':
+                    array = list(_unpack_list(stream, arg[1]))
+                    unpacked.append(array)
+                if arg[0] == 'FIXED_DICT':
+                    unpacked.append(_unpack_dict(stream, arg[1], arg[2]))
+    except Exception:
+        # production only
+        unpacked.append(None)
     return unpacked
 
 
