@@ -183,6 +183,7 @@ def VECTOR4(stream):
 TYPES = {
     'BLOB': BLOB,
     'STRING': STRING,
+    'UNICODE_STRING': STRING,
     'FLOAT': FLOAT32,
     'FLOAT32': FLOAT32,
     'FLOAT64': FLOAT64,
