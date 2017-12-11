@@ -20,10 +20,16 @@ def _unpack_dict(stream, types, allow_none):
 
     # bada-boom, empty dict :)
     # check if this works with non-null dict
-    if allow_none and stream.read(1) == chr(0x00):
-        return None
-    else:
-        stream.seek(stream_pos)
+    if allow_none:
+        flag = stream.read(1)
+        # stream.seek(stream_pos)
+        if flag == chr(0x00):
+            return None
+        elif flag == chr(0x01):
+            # not empty dict
+            pass
+        else:
+            stream.seek(stream_pos)
 
     kw = {}
     for key, value in types:
