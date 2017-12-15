@@ -9,8 +9,10 @@ __author__ = "Aleksandr Shyshatsky"
 __all__ = ['unpack_func_args']
 
 
-def _unpack_list(stream, type_):
-    size, = TYPES['UINT8'](stream)
+def _unpack_list(stream, type_, size=None):
+    if size is None:
+        size, = TYPES['UINT8'](stream)
+
     for _ in xrange(size):
         yield unpack_variables(stream, [type_])[0]
 
@@ -56,7 +58,7 @@ def unpack_variables(stream, arguments_list):
                     unpacked.append(TYPES[arg](stream)[0])
             elif isinstance(arg, (list, tuple)):
                 if arg[0] == 'ARRAY':
-                    array = list(_unpack_list(stream, arg[1]))
+                    array = list(_unpack_list(stream, *arg[1:]))
                     unpacked.append(array)
                 if arg[0] == 'FIXED_DICT':
                     unpacked.append(_unpack_dict(stream, arg[1], arg[2]))
