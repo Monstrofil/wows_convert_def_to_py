@@ -39,13 +39,17 @@ class EntityConstructor(object):
                             self._build_subpath)
 
     def _parse(self, entity):
-        root, = etree.parse(self._get_def_path(entity.name), parser=etree.XMLParser(remove_comments=True)).xpath('/root')
+        root, = etree.parse(self._get_def_path(entity.name),
+                            parser=etree.XMLParser(
+                                remove_comments=True,
+                                remove_blank_text=True)).xpath('/root')
 
         for item in root:
             if item.tag in ('ClientMethods', 'CellMethods', 'BaseMethods'):
                 entity.methods += list(self._parse_methods(item))
 
             if item.tag in ('Properties',):
+                print entity.name
                 entity.properties += list(self._parse_properties(item))
 
             if item.tag in ('Implements',):

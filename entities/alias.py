@@ -40,7 +40,7 @@ class Alias(object):
     def _get_type(self, item):
         type_ = item.text.strip()
 
-        if type_ == 'ARRAY':
+        if type_ in ('ARRAY', 'TUPLE'):
             return self._get_list_type(item)
 
         elif type_ == 'FIXED_DICT':
@@ -56,7 +56,7 @@ class Alias(object):
 
             self._aliases[item.tag.strip()] = self._get_type(item)
 
-            if type_ == 'ARRAY':
+            if type_ in ('ARRAY', 'TUPLE'):
                 self._aliases[item.tag.strip()] = self._get_list_type(item)
             elif type_ == 'FIXED_DICT':
                 self._aliases[item.tag.strip()] = self._get_dict_type(item)
