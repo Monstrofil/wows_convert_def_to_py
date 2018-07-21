@@ -68,7 +68,7 @@ def FLOAT64(stream):
     :type stream: StringIO
     :rtype: float 
     """
-    return unpack('d', stream.read(4))
+    return unpack('d', stream.read(8))
 
 
 def INT8(stream):
@@ -79,6 +79,7 @@ def INT8(stream):
     :rtype: int 
     """
     return unpack('b', stream.read(1))
+
 
 def INT16(stream):
     """
@@ -118,6 +119,7 @@ def UINT8(stream):
     :rtype: int 
     """
     return unpack('B', stream.read(1))
+
 
 def UINT16(stream):
     """
@@ -180,9 +182,11 @@ def VECTOR4(stream):
     """
     return unpack('ffff', stream.read(16)),
 
+
 TYPES = {
     'BLOB': BLOB,
     'STRING': STRING,
+    'UNICODE_STRING': STRING,
     'FLOAT': FLOAT32,
     'FLOAT32': FLOAT32,
     'FLOAT64': FLOAT64,
@@ -198,4 +202,21 @@ TYPES = {
     'VECTOR3': VECTOR3,
     'VECTOR4': VECTOR4,
     'PYTHON': PYTHON
+}
+
+STATIC_TYPES = {
+    'FLOAT': 32,
+    'FLOAT32': 32,
+    'FLOAT64': 64,
+    'INT8': 8,
+    'INT16': 16,
+    'INT32': 32,
+    'INT64': 64,
+    'UINT8': 8,
+    'UINT16': 16,
+    'UINT32': 32,
+    'UINT64': 64,
+    'VECTOR2': 2 * 32,
+    'VECTOR3': 3 * 32,
+    'VECTOR4': 4 * 32,
 }

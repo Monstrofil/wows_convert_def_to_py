@@ -2,15 +2,20 @@
 # coding=utf-8
 from StringIO import StringIO
 
-from build._alias import g_aliasMap
-from .primitive_types import TYPES
+try:
+    from build._alias import g_aliasMap
+except ImportError:
+    from _alias import g_aliasMap
+from primitive_types import TYPES
 
 __author__ = "Aleksandr Shyshatsky"
 __all__ = ['unpack_func_args']
 
 
-def _unpack_list(stream, type_):
-    size, = TYPES['UINT8'](stream)
+def _unpack_list(stream, type_, size=None):
+    if size is None:
+        size, = TYPES['UINT8'](stream)
+
     for _ in xrange(size):
         yield unpack_variables(stream, [type_])[0]
 
@@ -20,10 +25,16 @@ def _unpack_dict(stream, types, allow_none):
 
     # bada-boom, empty dict :)
     # check if this works with non-null dict
-    if allow_none and stream.read(1) == chr(0x00):
-        return None
-    else:
-        stream.seek(stream_pos)
+    if allow_none:
+        flag = stream.read(1)
+        # stream.seek(stream_pos)
+        if flag == chr(0x00):
+            return None
+        elif flag == chr(0x01):
+            # not empty dict
+            pass
+        else:
+            stream.seek(stream_pos)
 
     kw = {}
     for key, value in types:
@@ -31,7 +42,7 @@ def _unpack_dict(stream, types, allow_none):
     return kw
 
 
-def unpack_variables(stream, arguments_list):
+def unpack_variables(stream, arguments_list, with_tell=False):
     """
     Unpack given stream into packed_arguments;
     :param stream: 
@@ -41,22 +52,20 @@ def unpack_variables(stream, arguments_list):
         stream = StringIO(stream)
 
     unpacked = []
-    try:
-        for arg in arguments_list:
-            if isinstance(arg, str):
-                if arg in g_aliasMap:
-                    unpacked.extend(unpack_variables(stream, [g_aliasMap[arg]]))
-                else:
-                    unpacked.append(TYPES[arg](stream)[0])
-            elif isinstance(arg, (list, tuple)):
-                if arg[0] == 'ARRAY':
-                    array = list(_unpack_list(stream, arg[1]))
-                    unpacked.append(array)
-                if arg[0] == 'FIXED_DICT':
-                    unpacked.append(_unpack_dict(stream, arg[1], arg[2]))
-    except Exception:
-        # production only
-        unpacked.append(None)
+    for arg in arguments_list:
+        if isinstance(arg, str):
+            if arg in g_aliasMap:
+                unpacked.extend(unpack_variables(stream, [g_aliasMap[arg]]))
+            else:
+                unpacked.append(TYPES[arg](stream)[0])
+        elif isinstance(arg, (list, tuple)):
+            if arg[0] == 'ARRAY':
+                array = list(_unpack_list(stream, *arg[1:]))
+                unpacked.append(array)
+            if arg[0] == 'FIXED_DICT':
+                unpacked.append(_unpack_dict(stream, arg[1], arg[2]))
+    if with_tell:
+        return unpacked, stream.tell()
     return unpacked
 
 
@@ -67,7 +76,8 @@ def unpack_func_args(arguments_list):
     """
     def _func_wrap(func):
         def _wrapper(self, stream):
-            args = unpack_variables(stream, arguments_list)
+            args, tell = unpack_variables(stream, arguments_list, with_tell=True)
+            assert tell == len(stream), "Something wrong with unpack method"
             return func(self, *args)
         return _wrapper
     return _func_wrap
