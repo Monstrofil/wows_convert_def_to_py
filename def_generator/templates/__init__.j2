@@ -1,12 +1,13 @@
 #!/usr/bin/python
 # coding=utf-8
-{% for entity in entities %}
+{% for entity in entities -%}
 {% if entity %}from {{entity}} import {{entity}}{% endif %}
 {% endfor %}
-
 
 # import user plugins (override auto-generated models)
 try:
     from plugins import *
-except:
+except ImportError:
     pass
+
+ENTITIES = [{% for entity in entities -%}{% if entity %}{{entity}}, {% endif %}{% endfor %}]

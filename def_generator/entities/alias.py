@@ -1,7 +1,6 @@
 #!/usr/bin/python
 # coding=utf-8
 import os
-
 from lxml import etree
 
 __author__ = "Aleksandr Shyshatsky"
@@ -49,7 +48,7 @@ class Alias(object):
         return type_
 
     def get_map(self):
-        root, = self._xml.xpath('/root')
+        root = self._xml.getroot()
 
         for item in root:
             type_ = item.text.strip()
@@ -60,5 +59,4 @@ class Alias(object):
                 self._aliases[item.tag.strip()] = self._get_list_type(item)
             elif type_ == 'FIXED_DICT':
                 self._aliases[item.tag.strip()] = self._get_dict_type(item)
-
         return self._aliases
