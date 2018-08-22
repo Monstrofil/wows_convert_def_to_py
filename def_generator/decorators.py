@@ -7,6 +7,7 @@ try:
 except ImportError:
     from _alias import g_aliasMap
 from primitive_types import TYPES
+from nested_types import PyFixedDict, PyFixedList
 
 __author__ = "Aleksandr Shyshatsky"
 __all__ = ['unpack_func_args']
@@ -16,8 +17,10 @@ def _unpack_list(stream, type_, size=None):
     if size is None:
         size, = TYPES['UINT8'](stream)
 
+    array = PyFixedList(type_)
     for _ in xrange(size):
-        yield unpack_variables(stream, [type_])[0]
+        array.append(unpack_variables(stream, [type_])[0])
+    return array
 
 
 def _unpack_dict(stream, types, allow_none):
@@ -36,7 +39,7 @@ def _unpack_dict(stream, types, allow_none):
         else:
             stream.seek(stream_pos)
 
-    kw = {}
+    kw = PyFixedDict(types)
     for key, value in types:
         kw[key] = unpack_variables(stream, [value])[0]
     return kw
@@ -45,8 +48,6 @@ def _unpack_dict(stream, types, allow_none):
 def unpack_variables(stream, arguments_list, with_tell=False):
     """
     Unpack given stream into packed_arguments;
-    :param stream: 
-    :return: 
     """
     if isinstance(stream, (str, unicode)):
         stream = StringIO(stream)
@@ -60,7 +61,7 @@ def unpack_variables(stream, arguments_list, with_tell=False):
                 unpacked.append(TYPES[arg](stream)[0])
         elif isinstance(arg, (list, tuple)):
             if arg[0] == 'ARRAY':
-                array = list(_unpack_list(stream, *arg[1:]))
+                array = _unpack_list(stream, *arg[1:])
                 unpacked.append(array)
             if arg[0] == 'FIXED_DICT':
                 unpacked.append(_unpack_dict(stream, arg[1], arg[2]))
