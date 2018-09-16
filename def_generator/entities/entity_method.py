@@ -71,7 +71,7 @@ class EntityMethod(object):
             if item.tag == cls.ARGS:
                 for arg in item:
                     method.arguments.append(cls._get_type(arg))
-            if item.tag == 'VariableLengthHeaderSize':
+            if item.tag == 'VariableLengthHeaderSize' and item.text:
                 # TODO: use this tag during arguments parsing
                 method.header_size = int(item.text.strip())
         return method
