@@ -32,18 +32,27 @@ class {{entity.name}}({% if not entity.implements %}object{% endif %}{% for arg 
         {{arg}}.__init__(self)
 {% endfor %}
         self._properties = getattr(self, '_properties', [])
-        self._properties.extend([
+        for item in [
             {% for arg in entity.properties %}({{arg.size}}, '{{arg.name}}'),
             {% endfor %}
-        ])
+        ]:
+            # in order to avoid duplicates same as BigWorld does
+            if item in self._properties:
+                continue
+            self._properties.append(item)
+
         # sort properties by size
         self._properties.sort(key=itemgetter(0))
 
         self._methods = getattr(self, '_methods', [])
-        self._methods.extend([
+        for item in [
             {% for arg in entity.methods %}({{arg.size}}, '{{arg.name}}'),
             {% endfor %}
-        ])
+        ]:
+            # in order to avoid duplicates same as BigWorld does
+            if item in self._methods:
+                continue
+            self._methods.append(item)
         # sort methods by size
         self._methods.sort(key=itemgetter(0))
         return
