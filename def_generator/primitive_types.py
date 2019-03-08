@@ -1,7 +1,6 @@
 #!/usr/bin/python
 # coding=utf-8
 from struct import unpack
-from StringIO import StringIO
 
 __author__ = "Aleksandr Shyshatsky"
 

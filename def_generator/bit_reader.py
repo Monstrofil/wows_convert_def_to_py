@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # coding=utf-8
-from StringIO import StringIO
+from io import BytesIO
 from math import ceil, log
 
 __author__ = "Aleksandr Shyshatsky"
@@ -9,8 +9,8 @@ __author__ = "Aleksandr Shyshatsky"
 class BitReader(object):
     def __init__(self, stream):
         # TODO: leave only one type here
-        if isinstance(stream, str):
-            self._stream = StringIO(stream)
+        if isinstance(stream, bytes):
+            self._stream = BytesIO(stream)
         else:
             self._stream = stream
 
@@ -31,7 +31,7 @@ class BitReader(object):
         return self._stream.read()
 
     def _iter_string_bits(self, string):
-        for b in map(ord, string):
+        for b in string:
             for i in reversed(range(8)):
                 yield (b >> i) & 1  # 0b00..[0|1]
 

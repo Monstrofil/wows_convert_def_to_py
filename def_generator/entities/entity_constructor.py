@@ -6,7 +6,7 @@ import os
 from jinja2 import Environment, FileSystemLoader
 from lxml import etree
 
-from entity import Entity
+from .entity import Entity
 
 from def_generator.entities.entity_method import EntityMethod
 from def_generator.entities.entity_property import EntityProperty
@@ -93,5 +93,5 @@ class EntityConstructor(object):
             loader=FileSystemLoader(self.TEMPLATES_PATH)
         ).get_template(self.ENTITY_TEMPLATE)
 
-        with open(os.path.join(self._get_build_dir(), entity.name + '.py'), 'wb') as f:
+        with open(os.path.join(self._get_build_dir(), entity.name + '.py'), 'w') as f:
             f.write(template.render(dict(entity=entity)))

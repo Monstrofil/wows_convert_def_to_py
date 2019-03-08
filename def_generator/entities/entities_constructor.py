@@ -8,9 +8,9 @@ import shutil
 from jinja2 import Environment, FileSystemLoader
 from lxml import etree
 
-from alias import Alias
+from .alias import Alias
 from def_generator.entities.helper import VariablesLengthHelper
-from entity_constructor import EntityConstructor
+from .entity_constructor import EntityConstructor
 
 from def_generator.entities.entity_method import EntityMethod
 from def_generator.entities.entity_property import EntityProperty
@@ -86,7 +86,7 @@ class EntitiesConstructor(object):
             loader=FileSystemLoader(self.TEMPLATES_PATH)
         ).get_template(self.VARIABLE_TEMPLATE)
         alias_map = Alias(self._base_path).get_map()
-        with open('_alias.py', 'wb') as f:
+        with open('_alias.py', 'w') as f:
             f.write(template.render(dict(varName='g_aliasMap', value=repr(alias_map))))
         return VariablesLengthHelper(alias_map)
 
@@ -94,14 +94,14 @@ class EntitiesConstructor(object):
         template = Environment(
             loader=FileSystemLoader(self.TEMPLATES_PATH)
         ).get_template(self.VARIABLE_TEMPLATE)
-        with open('_entities_list.py', 'wb') as f:
+        with open('_entities_list.py', 'w') as f:
             f.write(template.render(dict(varName='g_entitiesList', value=self._entities)))
 
     def _build_entities_imports(self):
         template = Environment(
             loader=FileSystemLoader(self.TEMPLATES_PATH)
         ).get_template(self.VARIABLE_INIT)
-        with open(os.path.join('entities', '__init__.py'), 'wb') as f:
+        with open(os.path.join('entities', '__init__.py'), 'w') as f:
             f.write(template.render(dict(entities=self._entities)))
 
     def _get_entity_description(self, entity_name):
