@@ -1,3 +1,4 @@
 lxml
 Jinja2
 ddt
+zope

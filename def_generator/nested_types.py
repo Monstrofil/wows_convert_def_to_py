@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # coding=utf-8
+
 __author__ = "Aleksandr Shyshatsky"
 
 
@@ -12,10 +13,10 @@ class PyFixedDict(dict):
         super(PyFixedDict, self).__init__(*args, **kwargs)
 
     def get_field_name_for_index(self, index):
-        return self._attributes[index][0]
+        return list(self._attributes.keys())[index]
 
     def get_field_type_for_index(self, index):
-        return self._attributes[index][1]
+        return list(self._attributes.values())[index]
 
 
 # TODO: hardcoded list len
