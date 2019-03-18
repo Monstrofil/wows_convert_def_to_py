@@ -59,7 +59,12 @@ class String(_DataType):
 
     def _get_value_from_stream(self, stream: BytesIO, header_size: int):
         size, = unpack('B', stream.read(1))
-        return stream.read(size).decode('utf-8')
+        _str = stream.read(size)
+        try:
+            return _str.decode('utf-8')
+        except UnicodeDecodeError:
+            # probably this is a pickle string or smtg like that
+            return _str
 
     def _get_default_value_from_section(self, section: etree.ElementBase):
         assert isinstance(section.text, str)

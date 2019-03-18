@@ -184,6 +184,7 @@ class EntityPropertiesDescriptions:
 class BaseDataObjectDef:
     def __init__(self, base_dir: str, alias: Alias):
         self._properties = EntityPropertiesDescriptions()
+        self._volatile = {}
         self._alias = alias
         self._base_dir = base_dir
 
@@ -202,9 +203,31 @@ class BaseDataObjectDef:
             return
         self._properties.parse(props_list, self._alias)
 
+    def _parse_volatile(self, props_list: etree.ElementBase):
+        """
+        Some properties are updated more often than others,
+        and almost all entities have a set of properties that
+        need to be handled specially due to this. These properties
+        are called volatile properties, and are pre-defined
+        by the BigWorld engine.
+        <position/> | <position> float </position>
+        <yaw/> | <yaw> float </yaw>
+        <pitch/> | <pitch> float </pitch>
+        <roll/> | <roll> float </roll>
+        """
+        if props_list is None:
+            return
+
+        for item in props_list:
+            if item.tag == 'position':
+                self._volatile['position'] = (0, 0, 0)
+            elif item.tag in ['yaw', 'pitch', 'roll']:
+                self._volatile[item.tag] = 0.0
+
     def _parse_section(self, section: etree.ElementBase):
         self._parse_implements(section.find("Implements"))
         self._parse_properties(section.find("Properties"))
+        self._parse_volatile(section.find("Volatile"))
 
 
 class EntityDef(BaseDataObjectDef):
@@ -238,6 +261,9 @@ class EntityDef(BaseDataObjectDef):
 
     def properties(self):
         return self._properties
+
+    def volatiles(self):
+        return self._volatile
 
     def _parse_cell_methods(self, section: etree.ElementBase):
         if section is None:
