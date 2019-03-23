@@ -1,9 +1,12 @@
 import unittest
 from io import BytesIO
 
+from ddt import data, unpack, ddt
+
 from def_generator.bit_reader import BitReader
 
 
+@ddt
 class TestBigReader(unittest.TestCase):
 
     def test_read_bits_normally_all_array(self):
@@ -36,6 +39,19 @@ class TestBigReader(unittest.TestCase):
         self.assertEqual(2, bit_reader.get(3))
 
         self.assertEqual(b'', bit_reader.get_rest())
+
+    @data(
+        [0, 0],
+        [1, 0],
+        [2, 1],
+        [3, 2],
+        [4, 2],
+        [5, 3]
+    )
+    @unpack
+    def test_bits_requires(self, object_size, bits):
+        bit_reader = BitReader('')
+        self.assertEqual(bits, bit_reader.bits_required(object_size))
 
 
 if __name__ == '__main__':

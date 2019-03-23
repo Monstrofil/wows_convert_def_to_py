@@ -1,5 +1,9 @@
 #!/usr/bin/python
 # coding=utf-8
+"""
+Dirty hack to simplify nested property and slices
+Override list and dict types to store information about types
+"""
 
 __author__ = "Aleksandr Shyshatsky"
 

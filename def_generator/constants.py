@@ -26,19 +26,19 @@ class EntityFlags:
     EDITOR_ONLY         = 128
 
 
-aliasesFile: str = "scripts/entity_defs/alias.xml"
+ALIASES_FILE: str = "scripts/entity_defs/alias.xml"
 
 # entities constants
 
-entitiesFile: str = "scripts/entities.xml"
+ENTITIES_FILE: str = "scripts/entities.xml"
 
 ENTITIES_DEFS_PATH: str = "scripts/entity_defs"
 
 # user data objects constants
 
-userDataObjectsFile: str = "scripts/user_data_objects.xml"
+USER_DATA_OBJECTS_FILE: str = "scripts/user_data_objects.xml"
 
-userDataObjectsDefsPath: str = "scripts/user_data_object_defs"
+USER_DATA_OBJECTS_DEFS_PATH: str = "scripts/user_data_object_defs"
 
 INFINITY = 0xFFFF
 

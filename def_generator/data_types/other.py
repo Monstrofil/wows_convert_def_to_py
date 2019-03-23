@@ -59,7 +59,15 @@ class String(_DataType):
 
     def _get_value_from_stream(self, stream: BytesIO, header_size: int):
         size, = unpack('B', stream.read(1))
-        _str = stream.read(size)
+        # hack for arenaStateReceived
+        if size == 0xff:
+            size, = unpack('H', stream.read(2))
+            # some dummy shit
+            unpack('B', stream.read(1))
+
+            _str = stream.read(size)
+        else:
+            _str = stream.read(size)
         try:
             return _str.decode('utf-8')
         except UnicodeDecodeError:

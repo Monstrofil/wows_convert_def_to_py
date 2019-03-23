@@ -30,7 +30,7 @@ class DataType:
         """
         if default is None:
             return self.DEFAULT_VALUE
-        logging.info('Parsing default value for %s', self.__class__.__name__)
+        logging.debug('Parsing default value for %s', self.__class__.__name__)
         return self._get_default_value_from_section(default)
 
     def create_from_stream(self, stream: BytesIO, header_size: int = 1):
